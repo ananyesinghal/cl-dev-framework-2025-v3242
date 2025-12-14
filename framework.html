@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candid Leap Technical QA Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --critical: #dc2626;
+            --important: #f59e0b;
+            --recommendation: #10b981;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-white);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        header .meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        /* Warning Banner */
+        .warning-banner {
+            background: #fef3c7;
+            border-left: 4px solid var(--important);
+            padding: 1rem 2rem;
+            margin: 0;
+            color: #92400e;
+        }
+
+        .warning-banner strong {
+            font-weight: 600;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        /* Sidebar Navigation */
+        nav.sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        nav.sidebar h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.75rem;
+        }
+
+        nav.sidebar ul {
+            list-style: none;
+        }
+
+        nav.sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        nav.sidebar a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        nav.sidebar a:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        nav.sidebar a.active {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 2rem 3rem;
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: var(--bg-light);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Severity Badges */
+        .severity-critical {
+            color: var(--critical);
+            font-weight: 600;
+        }
+
+        .severity-important {
+            color: var(--important);
+            font-weight: 600;
+        }
+
+        .severity-recommendation {
+            color: var(--recommendation);
+            font-weight: 600;
+        }
+
+        /* Code Blocks */
+        code {
+            background: var(--bg-light);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875em;
+            color: var(--primary-dark);
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Horizontal Rules */
+        hr {
+            border: none;
+            border-top: 2px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 3rem;
+        }
+
+        /* Quick Reference Box */
+        .quick-ref {
+            background: var(--bg-white);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .quick-ref h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Document History */
+        .doc-history {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+
+            nav.sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+                max-height: 300px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            main {
+                max-width: 100%;
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem 1.5rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.25rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            nav.sidebar {
+                display: none;
+            }
+
+            main {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            header {
+                position: relative;
+                box-shadow: none;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus Styles for Accessibility */
+        a:focus,
+        button:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        /* Rule Status Buttons */
+        .rule-status {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .status-btn {
+            background: var(--bg-white);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.375rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-btn:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+        }
+
+        .status-btn.check {
+            color: var(--recommendation);
+        }
+
+        .status-btn.check.active {
+            background: var(--recommendation);
+            color: white;
+            border-color: var(--recommendation);
+        }
+
+        .status-btn.cross {
+            color: var(--critical);
+        }
+
+        .status-btn.cross.active {
+            background: var(--critical);
+            color: white;
+            border-color: var(--critical);
+        }
+
+        .status-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        tbody tr.rule-failed {
+            background: #fee2e2;
+        }
+
+        tbody tr.rule-passed {
+            background: #d1fae5;
+        }
+
+        /* Status column */
+        th.status-col, td.status-col {
+            width: 120px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Candid Leap Technical QA Framework</h1>
+        <div class="meta">
+            <span><strong>Version:</strong> 1.0</span>
+            <span><strong>Status:</strong> Internal Use Only</span>
+            <span><strong>Date:</strong> December 2025</span>
+        </div>
+    </header>
+
+    <div class="warning-banner">
+        <strong>⚠️ CONFIDENTIAL:</strong> This framework is for leadership use only. Developers should not have access to this document. The purpose is to evaluate raw output and identify genuine skill gaps — not to provide a checklist developers can use to mask issues before submission.
+    </div>
+
+    <div class="container">
+        <nav class="sidebar" aria-label="Table of Contents">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">1. Overview</a></li>
+                <li><a href="#qa-principles">2. QA Principles</a></li>
+                <li><a href="#html-rules">3. HTML Rules</a></li>
+                <li><a href="#css-rules">4. CSS Rules</a></li>
+                <li><a href="#javascript-rules">5. JavaScript Rules</a></li>
+                <li><a href="#accessibility-rules">6. Accessibility Rules</a></li>
+                <li><a href="#seo-rules">7. SEO Rules</a></li>
+                <li><a href="#performance-rules">8. Performance Rules</a></li>
+                <li><a href="#security-rules">9. Security Rules</a></li>
+                <li><a href="#content-quality-rules">10. Content Quality Rules</a></li>
+                <li><a href="#developer-evaluation">11. Developer Evaluation</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="overview">
+                <h2>1. Overview</h2>
+                <p>This framework provides a systematic methodology for evaluating HTML deliverables from the development team. It is designed to:</p>
+                <ul>
+                    <li>Catch technical issues before client delivery</li>
+                    <li>Identify patterns that reveal skill gaps</li>
+                    <li>Inform training and hiring decisions</li>
+                    <li>Maintain consistent quality standards across all projects</li>
+                </ul>
+
+                <h3>What This Framework Evaluates</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Area</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Technical Correctness</strong></td>
+                            <td>Valid HTML, CSS, JavaScript — code that works without errors</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Best Practices</strong></td>
+                            <td>Semantic markup, maintainable code, performance, security</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Accessibility</strong></td>
+                            <td>WCAG 2.2 AA compliance — all users can interact with content</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Developer Mindset</strong></td>
+                            <td>Patterns in errors reveal how a developer thinks</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Severity Levels</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>When to Use</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td>Breaks functionality, security vulnerabilities, accessibility barriers, placeholder content in production</td>
+                            <td>Work cannot ship</td>
+                        </tr>
+                        <tr>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                            <td>Significant UX impact, WCAG AA violations, spelling/grammar, best practice violations</td>
+                            <td>Should fix before shipping</td>
+                        </tr>
+                        <tr>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                            <td>Optimization opportunities, WCAG AAA, code style improvements</td>
+                            <td>Nice to have</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="qa-principles">
+                <h2>2. QA Principles</h2>
+
+                <h3>2.1 Evidence-Based Only</h3>
+                <p>Every issue must cite:</p>
+                <ul>
+                    <li><strong>Exact code</strong> (minimum 10 characters of context)</li>
+                    <li><strong>Line number</strong></li>
+                    <li><strong>Specific rule</strong> being violated</li>
+                </ul>
+                <p>If you cannot quote the problematic code, do not flag it as an issue.</p>
+
+                <h3>2.2 Context Matters</h3>
+                <p>Before flagging an issue, consider if there's a valid reason for the pattern:</p>
+                <ul>
+                    <li>Framework conventions (React, Vue, Angular)</li>
+                    <li>Intentional design choices</li>
+                    <li>Performance optimizations with comments</li>
+                    <li>Browser-specific fixes</li>
+                    <li>Progressive enhancement patterns</li>
+                </ul>
+
+                <h3>2.3 Pattern Recognition</h3>
+                <p>Individual issues matter less than patterns:</p>
+                <ul>
+                    <li>One missed alt tag = a mistake</li>
+                    <li>Five missed alt tags = a training need</li>
+                    <li>Consistent accessibility misses = mindset problem</li>
+                </ul>
+
+                <h3>2.4 Systematic Coverage</h3>
+                <p>Check <strong>every rule, every time</strong>. Skipping sections leads to missed issues. The framework exists to prevent oversight, not to be used selectively.</p>
+
+                <h3>2.5 Avoiding False Positives</h3>
+                <p><strong>Do NOT flag as issues:</strong></p>
+                <ul>
+                    <li>Valid HTML5 patterns</li>
+                    <li>Framework-specific conventions</li>
+                    <li>Intentional accessibility patterns (aria-hidden on decorative elements)</li>
+                    <li>Performance optimizations with explanatory comments</li>
+                    <li>Browser compatibility fixes with comments/prefixes</li>
+                    <li>Empty <code>alt=""</code> on confirmed decorative images</li>
+                    <li>Code clearly marked as development/prototype stage</li>
+                </ul>
+            </section>
+
+            <section id="html-rules">
+                <h2>3. HTML Rules</h2>
+
+                <h3>3.1 Document Structure (10 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-rule-id="HTML-001">
+                            <td>HTML-001</td>
+                            <td>DOCTYPE present</td>
+                            <td>File starts with <code>&lt;!DOCTYPE html&gt;</code></td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-002">
+                            <td>HTML-002</td>
+                            <td>Language declared</td>
+                            <td><code>&lt;html&gt;</code> has <code>lang</code> attribute</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-003">
+                            <td>HTML-003</td>
+                            <td>Charset declared</td>
+                            <td><code>&lt;meta charset="UTF-8"&gt;</code> in first 1024 bytes</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-004">
+                            <td>HTML-004</td>
+                            <td>Viewport configured</td>
+                            <td><code>&lt;meta name="viewport"&gt;</code> present</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-005">
+                            <td>HTML-005</td>
+                            <td>Title present</td>
+                            <td><code>&lt;title&gt;</code> element exists and not empty</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-006">
+                            <td>HTML-006</td>
+                            <td>Title length</td>
+                            <td>Title is 50-60 characters</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-007">
+                            <td>HTML-007</td>
+                            <td>No duplicate IDs</td>
+                            <td>Every <code>id</code> value is unique</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-008">
+                            <td>HTML-008</td>
+                            <td>Tags properly closed</td>
+                            <td>All opened tags are closed</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-009">
+                            <td>HTML-009</td>
+                            <td>Valid nesting</td>
+                            <td>Elements nested per HTML spec</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-rule-id="HTML-010">
+                            <td>HTML-010</td>
+                            <td>No deprecated elements</td>
+                            <td>No <code>&lt;font&gt;</code>, <code>&lt;center&gt;</code>, <code>&lt;marquee&gt;</code>, etc.</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                            <td class="status-col">
+                                <div class="rule-status">
+                                    <button class="status-btn check" data-action="pass" title="Pass">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                    <button class="status-btn cross" data-action="fail" title="Fail">
+                                        <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>3.2 Heading Hierarchy (6 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>HEAD-001</td>
+                            <td>Single h1</td>
+                            <td>Exactly one <code>&lt;h1&gt;</code> element</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>HEAD-002</td>
+                            <td>h1 appears first</td>
+                            <td>No h2-h6 appears before h1</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>HEAD-003</td>
+                            <td>No level skipping</td>
+                            <td>No h2→h4 without h3</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>HEAD-004</td>
+                            <td>Logical hierarchy</td>
+                            <td>Subsections use lower levels than parents</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>HEAD-005</td>
+                            <td>Headings not empty</td>
+                            <td>All headings contain text</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>HEAD-006</td>
+                            <td>Semantic not visual</td>
+                            <td>Headings used for structure, not styling</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>3.3 Semantic HTML (8 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SEM-001</td>
+                            <td>Main landmark</td>
+                            <td>Exactly one <code>&lt;main&gt;</code> element</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-002</td>
+                            <td>Navigation in nav</td>
+                            <td>Primary nav links in <code>&lt;nav&gt;</code></td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-003</td>
+                            <td>Header/footer used</td>
+                            <td>Site header/footer use semantic elements</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-004</td>
+                            <td>Lists semantic</td>
+                            <td>Lists use <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;dl&gt;</code></td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-005</td>
+                            <td>Tables for data</td>
+                            <td>Tables only for tabular data, not layout</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-006</td>
+                            <td>Buttons are buttons</td>
+                            <td>Clickable actions use <code>&lt;button&gt;</code> or <code>&lt;a&gt;</code></td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-007</td>
+                            <td>Links for navigation</td>
+                            <td><code>&lt;a&gt;</code> for navigation, <code>&lt;button&gt;</code> for actions</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEM-008</td>
+                            <td>Avoid div-itis</td>
+                            <td>No excessive nested divs</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="css-rules">
+                <h2>4. CSS Rules</h2>
+
+                <h3>4.1 Syntax & Validity (5 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CSS-001</td>
+                            <td>Valid syntax</td>
+                            <td>No CSS parse errors</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-002</td>
+                            <td>Properties exist</td>
+                            <td>All properties are valid CSS</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-003</td>
+                            <td>Values valid</td>
+                            <td>Property values match specification</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-004</td>
+                            <td>Units specified</td>
+                            <td>Numbers have units where required (except 0)</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-005</td>
+                            <td>No duplicate properties</td>
+                            <td>Same property not declared twice with same value</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>4.2 Best Practices (7 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CSS-006</td>
+                            <td>Avoid !important</td>
+                            <td>Minimal or no use of <code>!important</code></td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-007</td>
+                            <td>Reasonable specificity</td>
+                            <td>No over-qualified selectors</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-008</td>
+                            <td>Relative units for text</td>
+                            <td>Font sizes use em/rem, not px</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-009</td>
+                            <td>CSS variables used</td>
+                            <td>Colors, spacing, fonts as custom properties</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-010</td>
+                            <td>No unused styles</td>
+                            <td>All rules have matching elements</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-011</td>
+                            <td>Mobile-first approach</td>
+                            <td>Base styles for mobile, media queries for larger</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CSS-012</td>
+                            <td>Responsive design</td>
+                            <td>Layout adapts to viewport sizes</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="javascript-rules">
+                <h2>5. JavaScript Rules</h2>
+
+                <h3>5.1 Syntax & Errors (4 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>JS-001</td>
+                            <td>Valid syntax</td>
+                            <td>No JavaScript parse errors</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-002</td>
+                            <td>Variables declared</td>
+                            <td>All variables declared before use</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-003</td>
+                            <td>Functions defined</td>
+                            <td>Functions exist before being called</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-004</td>
+                            <td>Async handled</td>
+                            <td>Promises and async/await used correctly</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>5.2 Best Practices (6 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>JS-005</td>
+                            <td>No inline handlers</td>
+                            <td>No <code>onclick=""</code>, <code>onsubmit=""</code> in HTML</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-006</td>
+                            <td>Error handling</td>
+                            <td>try-catch for operations that can fail</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-007</td>
+                            <td>Event cleanup</td>
+                            <td>Event listeners removed when appropriate</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-008</td>
+                            <td>Modern syntax</td>
+                            <td>Uses let/const, arrow functions, template literals</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-009</td>
+                            <td>No console.log</td>
+                            <td>Debug statements removed in production</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>JS-010</td>
+                            <td>Strict equality</td>
+                            <td>Uses <code>===</code> instead of <code>==</code></td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="accessibility-rules">
+                <h2>6. Accessibility Rules</h2>
+                <blockquote>
+                    <strong>⚠️ Accessibility is non-negotiable.</strong> Repeated failures indicate a fundamental gap in developer training or mindset. Track these carefully.
+                </blockquote>
+
+                <h3>6.1 Perceivable — WCAG 2.2 Level AA (8 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A11Y-001</td>
+                            <td>Images have alt</td>
+                            <td>All <code>&lt;img&gt;</code> have <code>alt</code> attribute</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-002</td>
+                            <td>Alt text meaningful</td>
+                            <td>Alt describes content/function</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-003</td>
+                            <td>Decorative images</td>
+                            <td>Decorative images have <code>alt=""</code></td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-004</td>
+                            <td>Color contrast</td>
+                            <td>4.5:1 for text, 3:1 for large text</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-005</td>
+                            <td>Not color alone</td>
+                            <td>Info not conveyed by color alone</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-006</td>
+                            <td>Text resizable</td>
+                            <td>Text can resize to 200%</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-007</td>
+                            <td>Video captions</td>
+                            <td>Videos have captions/transcripts</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-008</td>
+                            <td>Audio alternatives</td>
+                            <td>Audio content has text alternatives</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>6.2 Operable — WCAG 2.2 Level AA (11 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A11Y-009</td>
+                            <td>Keyboard accessible</td>
+                            <td>All interactive elements work with keyboard</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-010</td>
+                            <td>No keyboard traps</td>
+                            <td>User can navigate away from all elements</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-011</td>
+                            <td>Skip link</td>
+                            <td>Skip to main content link present</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-012</td>
+                            <td>Focus visible</td>
+                            <td>Focus indicator visible on interactive elements</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-013</td>
+                            <td>Focus order</td>
+                            <td>Tab order follows logical reading order</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-014</td>
+                            <td>Link purpose</td>
+                            <td>Link text describes destination</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-015</td>
+                            <td>Touch targets</td>
+                            <td>Touch targets at least 44x44px</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-016</td>
+                            <td>No flashing</td>
+                            <td>Content doesn't flash &gt;3 times/second</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-016a</td>
+                            <td>Focus not obscured</td>
+                            <td>Focused element not entirely hidden by other content (WCAG 2.4.11)</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-016b</td>
+                            <td>Dragging alternatives</td>
+                            <td>Dragging movements have single-pointer alternative (WCAG 2.5.7)</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-016c</td>
+                            <td>Target size minimum</td>
+                            <td>Pointer targets at least 24x24 CSS pixels (WCAG 2.5.8)</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>6.3 Understandable — WCAG 2.2 Level AA (9 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A11Y-017</td>
+                            <td>Language declared</td>
+                            <td><code>&lt;html lang=""&gt;</code> present</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-018</td>
+                            <td>Language changes</td>
+                            <td>Inline language changes marked</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-019</td>
+                            <td>Form labels</td>
+                            <td>All inputs have associated labels</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-020</td>
+                            <td>Error identification</td>
+                            <td>Form errors clearly identified</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-021</td>
+                            <td>Error suggestions</td>
+                            <td>Error messages suggest how to fix</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-022</td>
+                            <td>Consistent nav</td>
+                            <td>Navigation consistent across pages</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-022a</td>
+                            <td>Consistent help</td>
+                            <td>Help mechanisms in same relative order (WCAG 3.2.6)</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-022b</td>
+                            <td>Redundant entry</td>
+                            <td>Information previously entered by user not required again (WCAG 3.3.7)</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-022c</td>
+                            <td>Accessible authentication</td>
+                            <td>Authentication doesn't require cognitive tests (WCAG 3.3.8)</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>6.4 Robust — WCAG 2.2 Level AA (5 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A11Y-023</td>
+                            <td>Valid HTML</td>
+                            <td>HTML validates without errors</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-024</td>
+                            <td>Name, role, value</td>
+                            <td>UI components have accessible name/role/value</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-025</td>
+                            <td>ARIA correct</td>
+                            <td>ARIA attributes used correctly</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-026</td>
+                            <td>No ARIA abuse</td>
+                            <td>ARIA doesn't override native semantics incorrectly</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>A11Y-027</td>
+                            <td>Status messages</td>
+                            <td>Dynamic content announced to screen readers</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="seo-rules">
+                <h2>7. SEO Rules</h2>
+
+                <h3>7.1 Meta & Content (6 rules)</h3>
+                <p><strong>Note:</strong> Title presence, title length, single h1, and viewport configuration are covered in the HTML Rules section (HTML-005, HTML-006, HEAD-001, HTML-004) and are not duplicated here.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SEO-001</td>
+                            <td>Meta description</td>
+                            <td>Present, 150-160 characters</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEO-002</td>
+                            <td>Canonical URL</td>
+                            <td><code>&lt;link rel="canonical"&gt;</code> if needed</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEO-003</td>
+                            <td>Open Graph</td>
+                            <td>og:title, og:description, og:image</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEO-004</td>
+                            <td>Twitter cards</td>
+                            <td>twitter:card meta tags</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEO-005</td>
+                            <td>Structured data</td>
+                            <td>JSON-LD schema.org markup</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEO-006</td>
+                            <td>Descriptive links</td>
+                            <td>Anchor text describes destination</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="performance-rules">
+                <h2>8. Performance Rules</h2>
+
+                <h3>8.1 Resource Loading (8 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PERF-001</td>
+                            <td>No render blocking</td>
+                            <td>CSS/JS doesn't block initial render</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-002</td>
+                            <td>Async/defer scripts</td>
+                            <td>Non-critical scripts use async or defer</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-003</td>
+                            <td>Image optimization</td>
+                            <td>Images appropriately sized, modern formats</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-004</td>
+                            <td>Lazy loading</td>
+                            <td>Below-fold images use <code>loading="lazy"</code></td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-005</td>
+                            <td>Font loading</td>
+                            <td><code>font-display</code> strategy defined</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-006</td>
+                            <td>Resource hints</td>
+                            <td>preconnect, prefetch, preload used</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-007</td>
+                            <td>No unused code</td>
+                            <td>No unused CSS/JS included</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>PERF-008</td>
+                            <td>Critical CSS</td>
+                            <td>Above-fold CSS inlined</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="security-rules">
+                <h2>9. Security Rules</h2>
+
+                <h3>9.1 Security Best Practices (8 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SEC-001</td>
+                            <td>No innerHTML abuse</td>
+                            <td><code>innerHTML</code> not used with user input</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-002</td>
+                            <td>No eval()</td>
+                            <td><code>eval()</code> not used</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-003</td>
+                            <td>No document.write</td>
+                            <td><code>document.write()</code> not used</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-004</td>
+                            <td>HTTPS resources</td>
+                            <td>All external resources over HTTPS</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-005</td>
+                            <td>SRI for CDN</td>
+                            <td>Third-party scripts have <code>integrity</code></td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-006</td>
+                            <td>Safe external links</td>
+                            <td>External links have <code>rel="noopener"</code></td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-007</td>
+                            <td>No inline handlers</td>
+                            <td>No onclick/onsubmit in HTML</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEC-008</td>
+                            <td>Input sanitization</td>
+                            <td>User inputs properly escaped</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="content-quality-rules">
+                <h2>10. Content Quality Rules</h2>
+
+                <h3>10.1 Placeholder & Dummy Content (6 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CONT-001</td>
+                            <td>No lorem ipsum</td>
+                            <td>No "lorem ipsum" placeholder text</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-002</td>
+                            <td>No placeholder text</td>
+                            <td>No "sample text", "add content here"</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-003</td>
+                            <td>No TODO comments</td>
+                            <td>No "TODO", "FIXME", "XXX" in production</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-004</td>
+                            <td>No template vars</td>
+                            <td>No unreplaced <code>{{variable}}</code>, <code>[PLACEHOLDER]</code></td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-005</td>
+                            <td>No test data</td>
+                            <td>No test@example.com, 555-1234, "John Doe"</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-006</td>
+                            <td>No default CMS</td>
+                            <td>No "Welcome to WordPress", "Sample Page"</td>
+                            <td><span class="severity-critical">🔴 Critical</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>10.2 Spelling & Grammar (5 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CONT-007</td>
+                            <td>No spelling errors</td>
+                            <td>All visible text correctly spelled</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-008</td>
+                            <td>Grammar correct</td>
+                            <td>Subject-verb agreement, tense consistency</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-009</td>
+                            <td>Punctuation correct</td>
+                            <td>Periods, commas, apostrophes correct</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-010</td>
+                            <td>Consistent caps</td>
+                            <td>Capitalization style consistent</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-011</td>
+                            <td>No typos</td>
+                            <td>No repeated words, missing words</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>10.3 Completeness & Consistency (5 rules)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CONT-012</td>
+                            <td>Content complete</td>
+                            <td>No trailing "...", empty sections</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-013</td>
+                            <td>Consistent terminology</td>
+                            <td>Same terms throughout</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-014</td>
+                            <td>Brand names correct</td>
+                            <td>Product/company names correct</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-015</td>
+                            <td>Copyright current</td>
+                            <td>Copyright year is current</td>
+                            <td><span class="severity-recommendation">🟢 Recommendation</span></td>
+                        </tr>
+                        <tr>
+                            <td>CONT-016</td>
+                            <td>Links descriptive</td>
+                            <td>Link text describes destination</td>
+                            <td><span class="severity-important">🟡 Important</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="developer-evaluation">
+                <h2>11. Developer Evaluation</h2>
+
+                <h3>11.1 Purpose</h3>
+                <p>QA findings are not just about fixing code — they reveal how a developer thinks. Patterns in errors indicate gaps in knowledge, attention, or mindset that can be addressed through targeted training or feedback.</p>
+
+                <h3>11.2 Pattern Analysis</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pattern</th>
+                            <th>What Repeated Misses Indicate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Accessibility</strong></td>
+                            <td>Developer doesn't consider users with disabilities as "real" users</td>
+                            <td>Empathy training, exposure to assistive technology</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Semantic HTML</strong></td>
+                            <td>Developer learned HTML as "what looks right" not "what is right"</td>
+                            <td>Fundamentals training on document structure</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Security</strong></td>
+                            <td>Developer doesn't think adversarially</td>
+                            <td>Threat modeling training, secure coding practices</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Content Quality</strong></td>
+                            <td>Developer treats content as "someone else's problem"</td>
+                            <td>Clarify that content is part of deliverable</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance</strong></td>
+                            <td>Developer doesn't consider page load as UX</td>
+                            <td>Core Web Vitals training, user perception</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSS Quality</strong></td>
+                            <td>Developer uses CSS to "make it look right"</td>
+                            <td>Training on cascade, specificity, maintainability</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>11.3 Scoring Rubric</h3>
+                <pre><code>BASE SCORE CALCULATION:
+= (Number of Critical Rules × 2) + (Number of Important Rules × 1) + (Number of Recommendation Rules × 0.5)
+
+DEDUCTIONS:
+- Critical rule failed:      -2 points each
+- Important rule failed:     -1 points each
+- Recommendation rule failed: -0.5 points each
+
+MINIMUM SCORE: 0</code></pre>
+
+                <h3>Score Interpretation</h3>
+                <p><strong>Note:</strong> Scores are calculated as a percentage of the maximum possible score based on the total number of rules.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Score %</th>
+                            <th>Rating</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>90-100%</td>
+                            <td><strong>Excellent</strong></td>
+                            <td>Ready for client delivery</td>
+                        </tr>
+                        <tr>
+                            <td>75-89%</td>
+                            <td><strong>Good</strong></td>
+                            <td>Minor revisions needed</td>
+                        </tr>
+                        <tr>
+                            <td>50-75%</td>
+                            <td><strong>Needs Work</strong></td>
+                            <td>Significant issues to address</td>
+                        </tr>
+                        <tr>
+                            <td>0-50%</td>
+                            <td><strong>Unacceptable</strong></td>
+                            <td>Requires full rework and discussion</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>11.4 Tracking Template</h3>
+                <p>Failed rules (crossed items) are listed below:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Rule</th>
+                            <th>Check</th>
+                            <th>Severity</th>
+                            <th class="status-col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary);">No failed rules yet. Mark rules as failed to see them here.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><strong>Interpretation:</strong></p>
+                <ul>
+                    <li>Consistently 85+ = Reliable</li>
+                    <li>Improving scores = Growth</li>
+                    <li>Declining scores = Needs intervention</li>
+                    <li>Persistent category issues = Targeted training needed</li>
+                </ul>
+
+                <h3>11.5 Feedback Guidelines</h3>
+                <p>When providing feedback to developers:</p>
+                <ol>
+                    <li><strong>Be specific</strong> — Quote exact code, explain why it's an issue, show the fix</li>
+                    <li><strong>Focus on patterns</strong> — One miss is a mistake; five misses is a training need</li>
+                    <li><strong>Explain the "why"</strong> — Developers learn better when they understand impact</li>
+                    <li><strong>Acknowledge growth</strong> — When a developer fixes a previous pattern, recognize it</li>
+                    <li><strong>Separate skill from effort</strong> — Not knowing is fixable; not caring is a different problem</li>
+                </ol>
+            </section>
+
+            <section id="quick-reference">
+                <h2>Quick Reference: Rule Counts</h2>
+                <div class="quick-ref">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Critical</th>
+                                <th>Important</th>
+                                <th>Recommendation</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HTML</td>
+                                <td>10</td>
+                                <td>7</td>
+                                <td>7</td>
+                                <td>24</td>
+                            </tr>
+                            <tr>
+                                <td>CSS</td>
+                                <td>1</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>JavaScript</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <td>Accessibility</td>
+                                <td>13</td>
+                                <td>20</td>
+                                <td>0</td>
+                                <td>33</td>
+                            </tr>
+                            <tr>
+                                <td>SEO</td>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>6</td>
+                            </tr>
+                            <tr>
+                                <td>Performance</td>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>5</td>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <td>Security</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>1</td>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <td>Content</td>
+                                <td>4</td>
+                                <td>8</td>
+                                <td>4</td>
+                                <td>16</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TOTAL</strong></td>
+                                <td><strong>35</strong></td>
+                                <td><strong>53</strong></td>
+                                <td><strong>30</strong></td>
+                                <td><strong>117</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="document-history">
+                <h2>Document History</h2>
+                <div class="doc-history">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Date</th>
+                                <th>Changes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.0</td>
+                                <td>December 2025</td>
+                                <td>Initial release</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer>
+                <p><em>Candid Leap Technical QA Framework — Internal Use Only</em></p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Rule status management
+        const ruleState = {
+            failed: new Set(),
+            passed: new Set()
+        };
+
+        // Status button HTML template
+        const statusButtonsHTML = `
+            <div class="rule-status">
+                <button class="status-btn check" data-action="pass" title="Pass">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </button>
+                <button class="status-btn cross" data-action="fail" title="Fail">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                </button>
+            </div>
+        `;
+
+        // Get rule severity from the row
+        function getRuleSeverity(ruleId) {
+            const row = document.querySelector(`tr[data-rule-id="${ruleId}"]`);
+            if (!row) return null;
+            
+            const severityCell = row.querySelector('td');
+            if (!severityCell) return null;
+            
+            // Find the severity span in the row
+            const severitySpan = row.querySelector('.severity-critical, .severity-important, .severity-recommendation');
+            if (!severitySpan) return null;
+            
+            if (severitySpan.classList.contains('severity-critical')) return 'critical';
+            if (severitySpan.classList.contains('severity-important')) return 'important';
+            if (severitySpan.classList.contains('severity-recommendation')) return 'recommendation';
+            return null;
+        }
+
+        // Count all rules by severity to calculate base score
+        function countRulesBySeverity() {
+            const counts = {
+                critical: 0,
+                important: 0,
+                recommendation: 0
+            };
+            
+            // Find all rule rows
+            const allRuleRows = document.querySelectorAll('tr[data-rule-id]');
+            
+            allRuleRows.forEach(row => {
+                const severity = getRuleSeverity(row.getAttribute('data-rule-id'));
+                if (severity === 'critical') {
+                    counts.critical++;
+                } else if (severity === 'important') {
+                    counts.important++;
+                } else if (severity === 'recommendation') {
+                    counts.recommendation++;
+                }
+            });
+            
+            return counts;
+        }
+
+        // Calculate maximum possible score (base score with no failures)
+        function calculateMaxScore() {
+            const ruleCounts = countRulesBySeverity();
+            return (ruleCounts.critical * 2) + (ruleCounts.important * 1) + (ruleCounts.recommendation * 0.5);
+        }
+
+        // Calculate score based on failed rules
+        function calculateScore() {
+            // Calculate base score: (Critical × 2) + (Important × 1) + (Recommendation × 0.5)
+            const ruleCounts = countRulesBySeverity();
+            let baseScore = (ruleCounts.critical * 2) + (ruleCounts.important * 1) + (ruleCounts.recommendation * 0.5);
+            
+            // Deduct points for failed rules
+            ruleState.failed.forEach(ruleId => {
+                const severity = getRuleSeverity(ruleId);
+                if (severity === 'critical') {
+                    baseScore -= 2;
+                } else if (severity === 'important') {
+                    baseScore -= 1;
+                } else if (severity === 'recommendation') {
+                    baseScore -= 0.5;
+                }
+            });
+            
+            return Math.max(0, Math.round(baseScore * 10) / 10); // Round to 1 decimal, min 0
+        }
+
+        // Calculate score as percentage
+        function calculateScorePercentage() {
+            const score = calculateScore();
+            const maxScore = calculateMaxScore();
+            if (maxScore === 0) return 0;
+            return Math.round((score / maxScore) * 100 * 10) / 10; // Round to 1 decimal
+        }
+
+        // Update score interpretation table
+        function updateScoreInterpretation() {
+            const scorePercent = calculateScorePercentage();
+            const actualScore = calculateScore();
+            const maxScore = calculateMaxScore();
+            
+            // Find the Score Interpretation heading
+            const section = document.querySelector('#developer-evaluation');
+            if (!section) return;
+            
+            const headings = section.querySelectorAll('h3');
+            let scoreTable = null;
+            
+            for (let heading of headings) {
+                if (heading.textContent.includes('Score Interpretation')) {
+                    // Find the next table after this heading
+                    let nextElement = heading.nextElementSibling;
+                    while (nextElement && nextElement.tagName !== 'TABLE') {
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                    if (nextElement && nextElement.tagName === 'TABLE') {
+                        scoreTable = nextElement;
+                        break;
+                    }
+                }
+            }
+            
+            if (!scoreTable) return;
+            
+            // Remove previous highlights
+            scoreTable.querySelectorAll('tbody tr').forEach(row => {
+                row.classList.remove('current-score-range');
+                row.style.backgroundColor = '';
+                row.style.fontWeight = '';
+            });
+            
+            // Highlight the current score range based on percentage
+            const rows = scoreTable.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const scoreCell = row.querySelector('td');
+                if (!scoreCell) return;
+                
+                const scoreText = scoreCell.textContent.trim();
+                let matches = false;
+                
+                if (scoreText.includes('-') && scoreText.includes('%')) {
+                    // Extract percentage range (e.g., "90-100%")
+                    const parts = scoreText.replace('%', '').split('-');
+                    if (parts.length === 2) {
+                        const min = parseFloat(parts[0].trim());
+                        const max = parseFloat(parts[1].trim());
+                        if (!isNaN(min) && !isNaN(max)) {
+                            if (max === 100) {
+                                // 90-100%: inclusive upper bound
+                                matches = scorePercent >= min && scorePercent <= max;
+                            } else if (min === 0) {
+                                // 0-50%: exclusive upper bound
+                                matches = scorePercent >= min && scorePercent < max;
+                            } else {
+                                // 50-75%, 75-89%: exclusive upper bound
+                                matches = scorePercent >= min && scorePercent < max;
+                            }
+                        }
+                    }
+                }
+                
+                if (matches) {
+                    row.classList.add('current-score-range');
+                    row.style.backgroundColor = '#dbeafe';
+                    row.style.fontWeight = '600';
+                }
+            });
+        }
+
+        // Add status column to all rule tables
+        function initializeRuleTables() {
+            const tables = document.querySelectorAll('table');
+            
+            // Rule ID patterns: HTML-001, HEAD-001, SEM-001, CSS-001, JS-001, A11Y-001, SEO-001, PERF-001, SEC-001, CONT-001, A11Y-016a, A11Y-022a, etc.
+            const ruleIdPattern = /^[A-Z0-9]+-[0-9]+[a-z]?$/;
+            
+            tables.forEach(table => {
+                // Skip Score Interpretation table - check if table is in Score Interpretation section
+                let isScoreTable = false;
+                let currentElement = table.previousElementSibling;
+                while (currentElement) {
+                    if (currentElement.tagName === 'H3' && currentElement.textContent.includes('Score Interpretation')) {
+                        isScoreTable = true;
+                        break;
+                    }
+                    if (currentElement.tagName === 'H2' || currentElement.tagName === 'H1') {
+                        break;
+                    }
+                    currentElement = currentElement.previousElementSibling;
+                }
+                if (isScoreTable) return;
+                
+                // Also check parent section
+                const section = table.closest('section');
+                if (section) {
+                    const headings = section.querySelectorAll('h3');
+                    for (let heading of headings) {
+                        if (heading.textContent.includes('Score Interpretation')) {
+                            // Check if this table comes after Score Interpretation heading
+                            let nextElement = heading.nextElementSibling;
+                            while (nextElement) {
+                                if (nextElement === table) {
+                                    return; // Skip this table
+                                }
+                                if (nextElement.tagName === 'H3') {
+                                    break; // Reached next section
+                                }
+                                nextElement = nextElement.nextElementSibling;
+                            }
+                        }
+                    }
+                }
+                
+                // Skip Tracking Template table (we'll handle it separately)
+                let isTrackingTable = false;
+                currentElement = table.previousElementSibling;
+                while (currentElement) {
+                    if (currentElement.tagName === 'H3' && currentElement.textContent.includes('Tracking Template')) {
+                        isTrackingTable = true;
+                        break;
+                    }
+                    if (currentElement.tagName === 'H2' || currentElement.tagName === 'H1') {
+                        break;
+                    }
+                    currentElement = currentElement.previousElementSibling;
+                }
+                if (isTrackingTable) return;
+                
+                const thead = table.querySelector('thead');
+                const tbody = table.querySelector('tbody');
+                
+                if (!thead || !tbody) return;
+                
+                // Check if this is a rule table (has ID column with pattern like HTML-001, CSS-001, etc.)
+                const firstRow = tbody.querySelector('tr');
+                if (!firstRow) return;
+                
+                const firstCell = firstRow.querySelector('td');
+                if (!firstCell) return;
+                
+                const firstCellText = firstCell.textContent.trim();
+                if (!ruleIdPattern.test(firstCellText)) return;
+                
+                // Add Status column header if not present
+                const headerRow = thead.querySelector('tr');
+                if (headerRow && !headerRow.querySelector('.status-col')) {
+                    const statusHeader = document.createElement('th');
+                    statusHeader.className = 'status-col';
+                    statusHeader.textContent = 'Status';
+                    headerRow.appendChild(statusHeader);
+                }
+                
+                // Add status buttons to each rule row
+                tbody.querySelectorAll('tr').forEach(row => {
+                    const firstCell = row.querySelector('td');
+                    if (!firstCell) return;
+                    
+                    const ruleId = firstCell.textContent.trim();
+                    if (!ruleIdPattern.test(ruleId)) return;
+                    
+                    // Add data-rule-id if not present
+                    if (!row.hasAttribute('data-rule-id')) {
+                        row.setAttribute('data-rule-id', ruleId);
+                    }
+                    
+                    // Add status column if not present
+                    if (!row.querySelector('.status-col')) {
+                        const statusCell = document.createElement('td');
+                        statusCell.className = 'status-col';
+                        statusCell.innerHTML = statusButtonsHTML;
+                        row.appendChild(statusCell);
+                    }
+                });
+            });
+        }
+
+        // Get URL parameters
+        function getURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const failed = params.get('failed');
+            const passed = params.get('passed');
+            
+            if (failed) {
+                ruleState.failed = new Set(failed.split(',').filter(Boolean));
+            }
+            if (passed) {
+                ruleState.passed = new Set(passed.split(',').filter(Boolean));
+            }
+        }
+
+        // Update URL parameters
+        function updateURLParams() {
+            const params = new URLSearchParams();
+            
+            if (ruleState.failed.size > 0) {
+                params.set('failed', Array.from(ruleState.failed).join(','));
+            }
+            if (ruleState.passed.size > 0) {
+                params.set('passed', Array.from(ruleState.passed).join(','));
+            }
+            
+            const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.history.replaceState({}, '', newURL);
+        }
+
+        // Update rule row visual state
+        function updateRuleRowState(ruleId) {
+            const row = document.querySelector(`tr[data-rule-id="${ruleId}"]`);
+            if (!row) return;
+            
+            const checkBtn = row.querySelector('.status-btn.check');
+            const crossBtn = row.querySelector('.status-btn.cross');
+            
+            // Remove previous state classes
+            row.classList.remove('rule-passed', 'rule-failed');
+            checkBtn?.classList.remove('active');
+            crossBtn?.classList.remove('active');
+            
+            // Apply current state
+            if (ruleState.passed.has(ruleId)) {
+                row.classList.add('rule-passed');
+                checkBtn?.classList.add('active');
+            } else if (ruleState.failed.has(ruleId)) {
+                row.classList.add('rule-failed');
+                crossBtn?.classList.add('active');
+            }
+        }
+
+        // Handle status button clicks
+        function handleStatusClick(button, ruleId, action) {
+            if (action === 'pass') {
+                ruleState.failed.delete(ruleId);
+                ruleState.passed.add(ruleId);
+            } else if (action === 'fail') {
+                ruleState.passed.delete(ruleId);
+                ruleState.failed.add(ruleId);
+            }
+            
+            updateRuleRowState(ruleId);
+            updateURLParams();
+            updateTrackingTemplate();
+            updateScoreInterpretation();
+        }
+
+        // Update tracking template with crossed items
+        function updateTrackingTemplate() {
+            // Find the tracking template section
+            const trackingSection = document.querySelector('#developer-evaluation');
+            if (!trackingSection) return;
+            
+            // Find the table that comes after "11.4 Tracking Template" heading
+            const headings = trackingSection.querySelectorAll('h3');
+            let trackingTable = null;
+            
+            for (let heading of headings) {
+                if (heading.textContent.includes('Tracking Template')) {
+                    // Find the next table after this heading
+                    let nextElement = heading.nextElementSibling;
+                    while (nextElement && nextElement.tagName !== 'TABLE') {
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                    if (nextElement && nextElement.tagName === 'TABLE') {
+                        trackingTable = nextElement;
+                        break;
+                    }
+                }
+            }
+            
+            if (!trackingTable) return;
+            
+            // Clear existing tbody and rebuild
+            const tbody = trackingTable.querySelector('tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // If there are failed rules, show them in a list format
+            if (ruleState.failed.size > 0) {
+                const failedRules = Array.from(ruleState.failed).sort();
+                
+                failedRules.forEach(ruleId => {
+                    const row = document.createElement('tr');
+                    
+                    // Find the original rule row to get its data
+                    const originalRow = document.querySelector(`tr[data-rule-id="${ruleId}"]`);
+                    if (!originalRow) return;
+                    
+                    const cells = originalRow.querySelectorAll('td');
+                    if (cells.length < 4) return;
+                    
+                    // Copy rule data
+                    const ruleIdCell = document.createElement('td');
+                    ruleIdCell.textContent = cells[0].textContent.trim();
+                    
+                    const ruleNameCell = document.createElement('td');
+                    ruleNameCell.textContent = cells[1].textContent.trim();
+                    
+                    const checkCell = document.createElement('td');
+                    checkCell.innerHTML = cells[2].innerHTML;
+                    
+                    const severityCell = document.createElement('td');
+                    severityCell.innerHTML = cells[3].innerHTML;
+                    
+                    // Add status (showing it's failed)
+                    const statusCell = document.createElement('td');
+                    statusCell.className = 'status-col';
+                    statusCell.innerHTML = `
+                        <div class="rule-status">
+                            <button class="status-btn cross active" disabled title="Failed">
+                                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            </button>
+                        </div>
+                    `;
+                    
+                    row.appendChild(ruleIdCell);
+                    row.appendChild(ruleNameCell);
+                    row.appendChild(checkCell);
+                    row.appendChild(severityCell);
+                    row.appendChild(statusCell);
+                    
+                    // Add failed styling
+                    row.classList.add('rule-failed');
+                    row.setAttribute('data-rule-id', ruleId);
+                    
+                    tbody.appendChild(row);
+                });
+            } else {
+                // Show empty row if no failed rules
+                const emptyRow = document.createElement('tr');
+                for (let i = 0; i < 5; i++) {
+                    const cell = document.createElement('td');
+                    if (i === 0) cell.textContent = 'No failed rules';
+                    emptyRow.appendChild(cell);
+                }
+                tbody.appendChild(emptyRow);
+            }
+        }
+
+        // Initialize on page load
+        function initialize() {
+            // Initialize tables - run multiple times to catch all tables
+            initializeRuleTables();
+            
+            // Run again after a short delay to ensure all content is loaded
+            setTimeout(() => {
+                initializeRuleTables();
+            }, 100);
+            
+            // Load state from URL
+            getURLParams();
+            
+            // Apply saved state to all rules
+            ruleState.failed.forEach(ruleId => updateRuleRowState(ruleId));
+            ruleState.passed.forEach(ruleId => updateRuleRowState(ruleId));
+            
+            // Update tracking template with initial state
+            updateTrackingTemplate();
+            
+            // Update score interpretation
+            updateScoreInterpretation();
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            // DOM is already ready
+            initialize();
+        }
+        
+        // Add event listeners to status buttons (delegated event handling)
+        document.addEventListener('click', (e) => {
+            const button = e.target.closest('.status-btn');
+            if (!button) return;
+            
+            const row = button.closest('tr[data-rule-id]');
+            if (!row) return;
+            
+            const ruleId = row.getAttribute('data-rule-id');
+            if (!ruleId) return;
+            
+            const action = button.getAttribute('data-action');
+            if (!action) return;
+            
+            handleStatusClick(button, ruleId, action);
+        });
+
+        // Smooth scroll and active navigation highlighting
+        document.querySelectorAll('nav.sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Update active state
+                    document.querySelectorAll('nav.sidebar a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav item on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav.sidebar a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
